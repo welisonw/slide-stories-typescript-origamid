@@ -1,0 +1,19 @@
+
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "strict": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "removeComments": true,
+    "noImplicitReturns": true,
+    "outDir": "dist",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "isolatedModules": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
+
