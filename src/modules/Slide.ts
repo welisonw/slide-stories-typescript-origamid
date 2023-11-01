@@ -22,7 +22,9 @@ export class Slide {
     this.controls = controls;
     this.time = time;
 
-    this.index = 0,
+    this.index = localStorage.getItem("activeSlide")
+      ? Number(localStorage.getItem("activeSlide"))
+      : 0,
     this.slideActive = this.elements[this.index];
     this.paused = false;
 
@@ -32,20 +34,49 @@ export class Slide {
     this.init();
   };
 
+
   hideSlide(element: Element) {
     element.classList.remove("active");
+
+    // return to beginning of video
+    if (element instanceof HTMLVideoElement) {
+      element.currentTime = 0;
+      element.pause();
+    }
   };
+
  
   showSlide(index : number) {
     this.index = index;
     this.slideActive = this.elements[this.index];
+
+    localStorage.setItem("activeSlide", String(this.index));
 
     // first removes active class from all elements, then activates it from the indicated slide
     this.elements.forEach(element => this.hideSlide(element));
 
     this.slideActive.classList.add("active");
 
-    this.autoSlide(this.time);
+    if (this.slideActive instanceof HTMLVideoElement) {
+      this.autoSlideVideo(this.slideActive);
+    } else {
+      this.autoSlide(this.time);
+    };
+  };
+
+
+  autoSlideVideo(video: HTMLVideoElement) {
+    const SECONDS_IN_MILLISECONDS = 1000;
+
+    video.muted = true;
+    video.play();
+
+    let firstPlay = true;
+
+    video.addEventListener("playing", () => {
+      if (firstPlay) this.autoSlide(video.duration * SECONDS_IN_MILLISECONDS);
+      firstPlay = false;
+    });
   };
 
 
@@ -55,6 +86,7 @@ export class Slide {
     this.timeout = new Timeout(() => this.nextSlide(), time);
   };
 
+
   prevSlide() {
     if (this.paused) return;
 
@@ -62,6 +94,7 @@ export class Slide {
 
     this.showSlide(prevSlide);
   };
+
 
   nextSlide() {
     if (this.paused) return;
@@ -71,12 +104,16 @@ export class Slide {
     this.showSlide(nextSlide);
   };
 
+
   pauseSlide() {
     this.pausedTimeout = new Timeout(() => {
       this.timeout?.pauseMoment();
       this.paused = true;
+
+      if (this.slideActive instanceof HTMLVideoElement) this.slideActive.pause();
     }, 300);
   };
+
 
   continueSlideAfterPause() {
     this.pausedTimeout?.clearTimeout();
@@ -85,8 +122,11 @@ export class Slide {
       this.paused = false;
       
       this.timeout?.continue();
+
+      if (this.slideActive instanceof HTMLVideoElement) this.slideActive.play();
     };
   };
+
 
   private addControls() {
     const prevButton = document.createElement("button");
@@ -107,6 +147,7 @@ export class Slide {
     prevButton.addEventListener("pointerup", () => this.prevSlide());
     nextButton.addEventListener("pointerup", () => this.nextSlide());
   };
+
 
   private init() {
     this.showSlide(this.index);

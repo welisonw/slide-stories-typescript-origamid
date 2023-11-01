@@ -14,7 +14,9 @@ export class Slide {
         this.elements = elements;
         this.controls = controls;
         this.time = time;
-        this.index = 0,
+        this.index = localStorage.getItem("activeSlide")
+            ? Number(localStorage.getItem("activeSlide"))
+            : 0,
             this.slideActive = this.elements[this.index];
         this.paused = false;
         this.timeout = null;
@@ -24,14 +26,37 @@ export class Slide {
     ;
     hideSlide(element) {
         element.classList.remove("active");
+        if (element instanceof HTMLVideoElement) {
+            element.currentTime = 0;
+            element.pause();
+        }
     }
     ;
     showSlide(index) {
         this.index = index;
         this.slideActive = this.elements[this.index];
+        localStorage.setItem("activeSlide", String(this.index));
         this.elements.forEach(element => this.hideSlide(element));
         this.slideActive.classList.add("active");
-        this.autoSlide(this.time);
+        if (this.slideActive instanceof HTMLVideoElement) {
+            this.autoSlideVideo(this.slideActive);
+        }
+        else {
+            this.autoSlide(this.time);
+        }
+        ;
+    }
+    ;
+    autoSlideVideo(video) {
+        const SECONDS_IN_MILLISECONDS = 1000;
+        video.muted = true;
+        video.play();
+        let firstPlay = true;
+        video.addEventListener("playing", () => {
+            if (firstPlay)
+                this.autoSlide(video.duration * SECONDS_IN_MILLISECONDS);
+            firstPlay = false;
+        });
     }
     ;
     autoSlide(time) {
@@ -57,6 +82,8 @@ export class Slide {
         this.pausedTimeout = new Timeout(() => {
             this.timeout?.pauseMoment();
             this.paused = true;
+            if (this.slideActive instanceof HTMLVideoElement)
+                this.slideActive.pause();
         }, 300);
     }
     ;
@@ -65,6 +92,8 @@ export class Slide {
         if (this.paused) {
             this.paused = false;
             this.timeout?.continue();
+            if (this.slideActive instanceof HTMLVideoElement)
+                this.slideActive.play();
         }
         ;
     }
