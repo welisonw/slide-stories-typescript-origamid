@@ -16,13 +16,13 @@ h1 {
   margin: 2rem;
 }
 
-:where(img, video) {
-  max-width: 100%;
-  display: block;
+#slide {
+  display: grid;
 }
 
 #slide-elements {
   display: grid;
+  grid-area: 1/1;
 }
 
 #slide-elements > * {
@@ -34,4 +34,21 @@ h1 {
 #slide-elements > .active {
   opacity: 1;
   visibility: visible;
+}
+
+:where(img, video) {
+  max-width: 100%;
+  display: block;
+}
+
+#slide-controls {
+  grid-area: 1/1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+#slide-controls button {
+  opacity: 0;
+  appearance: none;
+  -webkit-tap-highlight-color: #00000000;
 }
