@@ -17,9 +17,11 @@ export class Slide {
     this.elements = elements;
     this.controls = controls;
     this.time = time;
+
     this.index = 0,
-    this.showSlide(this.index);
     this.slideActive = this.elements[this.index];
+
+    this.init();
   };
 
   hideSlide(element: Element) {
@@ -36,4 +38,35 @@ export class Slide {
     this.slideActive.classList.add("active");
   };
 
+  prevSlide() {
+    const prevSlide = this.index > 0 ? this.index - 1 : this.elements.length -1;
+
+    this.showSlide(prevSlide);
+  };
+
+  nextSlide() {
+    const nextSlide = (this.index + 1) < this.elements.length ? this.index + 1 : 0;
+
+    this.showSlide(nextSlide);
+  };
+
+  private addControls() {
+    const prevButton = document.createElement("button");
+    const nextButton = document.createElement("button");
+
+    prevButton.innerText = "Slide Anterior";
+    nextButton.innerText = "Próximo Slide";
+
+    this.controls.appendChild(prevButton);
+    this.controls.appendChild(nextButton);
+
+    prevButton.addEventListener("pointerup", () => this.prevSlide())
+    nextButton.addEventListener("pointerup", () => this.nextSlide())
+  };
+
+  private init() {
+    this.showSlide(this.index);
+
+    this.addControls();
+  };
 };

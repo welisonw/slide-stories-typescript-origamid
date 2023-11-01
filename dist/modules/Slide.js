@@ -11,8 +11,8 @@ export class Slide {
         this.controls = controls;
         this.time = time;
         this.index = 0,
-            this.showSlide(this.index);
-        this.slideActive = this.elements[this.index];
+            this.slideActive = this.elements[this.index];
+        this.init();
     }
     ;
     hideSlide(element) {
@@ -24,6 +24,32 @@ export class Slide {
         this.slideActive = this.elements[this.index];
         this.elements.forEach(element => this.hideSlide(element));
         this.slideActive.classList.add("active");
+    }
+    ;
+    prevSlide() {
+        const prevSlide = this.index > 0 ? this.index - 1 : this.elements.length - 1;
+        this.showSlide(prevSlide);
+    }
+    ;
+    nextSlide() {
+        const nextSlide = (this.index + 1) < this.elements.length ? this.index + 1 : 0;
+        this.showSlide(nextSlide);
+    }
+    ;
+    addControls() {
+        const prevButton = document.createElement("button");
+        const nextButton = document.createElement("button");
+        prevButton.innerText = "Slide Anterior";
+        nextButton.innerText = "Próximo Slide";
+        this.controls.appendChild(prevButton);
+        this.controls.appendChild(nextButton);
+        prevButton.addEventListener("pointerup", () => this.prevSlide());
+        nextButton.addEventListener("pointerup", () => this.nextSlide());
+    }
+    ;
+    init() {
+        this.showSlide(this.index);
+        this.addControls();
     }
     ;
 }
