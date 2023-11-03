@@ -121,6 +121,8 @@ export class Slide {
 
 
   pauseSlide() {
+    document.body.classList.add("paused");
+
     this.pausedTimeout = new Timeout(() => {
       this.timeout?.pauseMoment();
       this.paused = true;
@@ -133,6 +135,8 @@ export class Slide {
 
 
   continueSlideAfterPause() {
+    document.body.classList.remove("paused");
+
     this.pausedTimeout?.clearTimeout();
 
     if (this.paused) {
@@ -161,7 +165,8 @@ export class Slide {
     this.controls.addEventListener("pointerdown", () => this.pauseSlide());
 
     // continue slide after pause
-    this.controls.addEventListener("pointerup", () => this.continueSlideAfterPause());
+    document.addEventListener("pointerup", () => this.continueSlideAfterPause());
+    document.addEventListener("touchend", () => this.continueSlideAfterPause());
 
     prevButton.addEventListener("pointerup", () => this.prevSlide());
     nextButton.addEventListener("pointerup", () => this.nextSlide());
