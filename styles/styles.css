@@ -58,6 +58,7 @@ h1 {
   display: flex;
   position: absolute;
   width: 100%;
+  padding: 1rem;
   pointer-events: none;
 }
 
@@ -66,19 +67,23 @@ h1 {
   display: block;
   height: .3125rem;
   background-color: #ffffff33;
-  margin: 1rem;
+  margin: .3125rem;
   border-radius: .25rem;
   overflow: hidden;
   isolation: isolate;
 }
 
-#slide-thumb .thumb-item {
+#slide-thumb .thumb-item.active {
   display: block;
   height: inherit;
   background-color: #ffffffe6;
   border-radius: .25rem;
   transform: translateX(-100%);
-  animation: thumb forwards 3s linear running;
+  animation: thumb forwards linear running;
+}
+
+#slide-thumb .thumb-item.paused {
+  animation-play-state: paused;
 }
 
 @keyframes thumb {

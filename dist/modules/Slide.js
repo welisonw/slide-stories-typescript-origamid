@@ -9,6 +9,8 @@ export class Slide {
     timeout;
     paused;
     pausedTimeout;
+    thumbItems;
+    thumbActive;
     constructor(container, elements, controls, time = 5000) {
         this.container = container;
         this.elements = elements;
@@ -21,6 +23,8 @@ export class Slide {
         this.paused = false;
         this.timeout = null;
         this.pausedTimeout = null;
+        this.thumbItems = null;
+        this.thumbActive = null;
         this.init();
     }
     ;
@@ -36,6 +40,12 @@ export class Slide {
         this.index = index;
         this.slideActive = this.elements[this.index];
         localStorage.setItem("activeSlide", String(this.index));
+        if (this.thumbItems) {
+            this.thumbActive = this.thumbItems[index];
+            this.thumbItems.forEach(thumb => thumb.classList.remove("active"));
+            this.thumbActive.classList.add("active");
+        }
+        ;
         this.elements.forEach(element => this.hideSlide(element));
         this.slideActive.classList.add("active");
         if (this.slideActive instanceof HTMLVideoElement) {
@@ -62,6 +72,8 @@ export class Slide {
     autoSlide(time) {
         this.timeout?.clearTimeout();
         this.timeout = new Timeout(() => this.nextSlide(), time);
+        if (this.thumbActive)
+            this.thumbActive.style.animationDuration = `${time}ms`;
     }
     ;
     prevSlide() {
@@ -82,6 +94,7 @@ export class Slide {
         this.pausedTimeout = new Timeout(() => {
             this.timeout?.pauseMoment();
             this.paused = true;
+            this.thumbActive?.classList.add("paused");
             if (this.slideActive instanceof HTMLVideoElement)
                 this.slideActive.pause();
         }, 300);
@@ -92,6 +105,7 @@ export class Slide {
         if (this.paused) {
             this.paused = false;
             this.timeout?.continue();
+            this.thumbActive?.classList.remove("paused");
             if (this.slideActive instanceof HTMLVideoElement)
                 this.slideActive.play();
         }
@@ -125,6 +139,7 @@ export class Slide {
         }
         ;
         this.controls.appendChild(thumbContainer);
+        this.thumbItems = Array.from(document.querySelectorAll(".thumb-item"));
     }
     ;
     init() {

@@ -10,6 +10,8 @@ export class Slide {
   timeout: Timeout | null;
   paused: boolean;
   pausedTimeout: Timeout | null;
+  thumbItems: HTMLElement[] | null;
+  thumbActive: HTMLElement | null;
 
   constructor(
     container: Element,
@@ -31,6 +33,9 @@ export class Slide {
     this.timeout = null;
     this.pausedTimeout = null;
 
+    this.thumbItems = null;
+    this.thumbActive = null;
+
     this.init();
   };
 
@@ -51,6 +56,14 @@ export class Slide {
     this.slideActive = this.elements[this.index];
 
     localStorage.setItem("activeSlide", String(this.index));
+
+    if (this.thumbItems) {
+      this.thumbActive = this.thumbItems[index];
+
+      this.thumbItems.forEach(thumb => thumb.classList.remove("active"));
+
+      this.thumbActive.classList.add("active");
+    };
 
     // first removes active class from all elements, then activates it from the indicated slide
     this.elements.forEach(element => this.hideSlide(element));
@@ -84,6 +97,8 @@ export class Slide {
     this.timeout?.clearTimeout();
 
     this.timeout = new Timeout(() => this.nextSlide(), time);
+
+    if (this.thumbActive) this.thumbActive.style.animationDuration = `${time}ms`;
   };
 
 
@@ -110,6 +125,8 @@ export class Slide {
       this.timeout?.pauseMoment();
       this.paused = true;
 
+      this.thumbActive?.classList.add("paused");
+
       if (this.slideActive instanceof HTMLVideoElement) this.slideActive.pause();
     }, 300);
   };
@@ -122,6 +139,8 @@ export class Slide {
       this.paused = false;
       
       this.timeout?.continue();
+
+      this.thumbActive?.classList.remove("paused");
 
       if (this.slideActive instanceof HTMLVideoElement) this.slideActive.play();
     };
@@ -164,6 +183,8 @@ export class Slide {
     };
 
     this.controls.appendChild(thumbContainer);
+
+    this.thumbItems = Array.from(document.querySelectorAll(".thumb-item"));
   };
 
 
