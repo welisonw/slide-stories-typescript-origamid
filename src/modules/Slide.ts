@@ -149,9 +149,29 @@ export class Slide {
   };
 
 
+  private addThumbItems() {
+    const thumbContainer = document.createElement("div");
+    thumbContainer.id = "slide-thumb";
+
+    for (let index = 0; index < this.elements.length; index++) {
+      thumbContainer.innerHTML += `
+        <span>
+          <span class="thumb-item">
+
+          </span>
+        </span>
+      `;
+    };
+
+    this.controls.appendChild(thumbContainer);
+  };
+
+
   private init() {
     this.showSlide(this.index);
 
     this.addControls();
+
+    this.addThumbItems();
   };
 };
